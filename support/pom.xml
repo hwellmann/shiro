@@ -42,6 +42,7 @@
         <module>openid4j</module>
         <module>features</module>
         <module>cas</module>
+        <module>cdi</module>
     </modules>
 
 </project>
