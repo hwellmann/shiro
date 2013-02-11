@@ -48,6 +48,7 @@ public abstract class CDITest {
         realm = new SimpleAccountRealm("test-realm");
         realm.addRole("role");
         realm.addAccount("foo", "bar", "role");
+        realm.addAccount("bilbo", "precious", "hobbit");
         realm.setRolePermissionResolver(new RolePermissionResolver() {
             public Collection<Permission> resolvePermissionsInRole(String roleString) {
                 if ("role".equals(roleString)) {

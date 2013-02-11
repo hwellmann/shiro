@@ -17,6 +17,12 @@
 
 package org.apache.shiro.cdi.interceptor;
 
+import static org.junit.Assert.assertEquals;
+
+import javax.interceptor.Interceptors;
+
+import org.apache.shiro.authz.UnauthenticatedException;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -30,14 +36,15 @@ import org.apache.shiro.subject.support.SubjectThreadState;
 import org.apache.shiro.util.ThreadState;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-
-import javax.interceptor.Interceptors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import org.junit.rules.ExpectedException;
 
 public class ShiroInterceptorTest extends CDITest {
+    
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    
     private SecuredService service;
     private ThreadState threadState;
 
@@ -64,6 +71,11 @@ public class ShiroInterceptorTest extends CDITest {
         bind(new Subject.Builder(securityManager).principals(principals).buildSubject());
     }
 
+    protected void bindHobbit() {
+        PrincipalCollection principals = new SimplePrincipalCollection("bilbo", realm.getName());
+        bind(new Subject.Builder(securityManager).principals(principals).buildSubject());
+    }
+
     protected void bindAuthenticatedUser() {
         PrincipalCollection principals = new SimplePrincipalCollection("foo", realm.getName());
         bind(new Subject.Builder(securityManager).
@@ -73,12 +85,9 @@ public class ShiroInterceptorTest extends CDITest {
     @Test
     public void guest() {
         assertEquals("hi foo", service.simple("foo"));
-        try {
-            service.authentication("foo");
-            fail();
-        } catch (Exception e) {
-            // ok
-        }
+        
+        thrown.expect(UnauthenticatedException.class);
+        service.authentication("foo");
     }
 
     @Test
@@ -88,15 +97,35 @@ public class ShiroInterceptorTest extends CDITest {
     }
 
     @Test
+    public void missingRole() {
+        bindHobbit();
+        
+        thrown.expect(UnauthorizedException.class);
+        service.role("foo");
+    }
+
+    @Test
     public void permission() {
         bindUser();
         assertEquals("hi foo", service.permission("foo"));
     }
 
     @Test
+    public void ḿissingPermission() {
+        bindHobbit();
+        
+        thrown.expect(UnauthorizedException.class);
+        service.permission("foo");
+    }
+
+    @Test
     public void authentication() {
         bindAuthenticatedUser();
         assertEquals("hi foo", service.authentication("foo"));
+        
+        thrown.expect(UnauthenticatedException.class);
+        service.simple("foo");
+        
     }
 
     @Test
