@@ -17,16 +17,18 @@
 
 package org.apache.shiro.cdi.interceptor;
 
-import org.apache.shiro.aop.MethodInvocation;
-import org.apache.shiro.authz.aop.AnnotationsAuthorizingMethodInterceptor;
+import java.lang.reflect.Method;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-import java.lang.reflect.Method;
 
-// don't use an interceptor binding since before CDI 1.1 it will not be usable by the user but only this module
+import org.apache.shiro.aop.MethodInvocation;
+import org.apache.shiro.authz.aop.AnnotationsAuthorizingMethodInterceptor;
+import org.apache.shiro.cdi.ShiroSecured;
+
 @Interceptor
+@ShiroSecured
 public class ShiroInterceptor extends AnnotationsAuthorizingMethodInterceptor {
     @AroundInvoke
     public Object around(final InvocationContext ic) throws Exception {
