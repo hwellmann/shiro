@@ -27,6 +27,11 @@ import org.apache.shiro.aop.MethodInvocation;
 import org.apache.shiro.authz.aop.AnnotationsAuthorizingMethodInterceptor;
 import org.apache.shiro.cdi.ShiroSecured;
 
+/**
+ * An interceptor for declarative security checks using the annotations from the 
+ * {@code org.apache.shiro.authz.annotation} package.
+ *
+ */
 @Interceptor
 @ShiroSecured
 public class ShiroInterceptor extends AnnotationsAuthorizingMethodInterceptor {

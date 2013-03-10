@@ -41,6 +41,7 @@
         <module>spring-hibernate</module>
 	    <module>guice</module>
         <module>quickstart-guice</module>
+        <module>web-cdi</module>
     </modules>
 
     <build>

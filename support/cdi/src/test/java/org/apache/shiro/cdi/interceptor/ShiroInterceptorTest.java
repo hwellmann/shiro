@@ -19,8 +19,6 @@ package org.apache.shiro.cdi.interceptor;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.interceptor.Interceptors;
-
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -29,6 +27,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.apache.shiro.cdi.CDITest;
+import org.apache.shiro.cdi.ShiroSecured;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -134,7 +133,7 @@ public class ShiroInterceptorTest extends CDITest {
         assertEquals("hi foo", service.user("foo"));
     }
 
-    @Interceptors({ShiroInterceptor.class})
+    @ShiroSecured
     public static class SecuredService {
         @RequiresGuest
         public String simple(final String name) {
