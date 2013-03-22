@@ -1075,5 +1075,20 @@
                 </site>
             </distributionManagement>
         </profile>
+  <profile>
+    <id>24t</id>
+    <distributionManagement>
+      <repository>
+        <id>releases-24translate</id>
+        <name>24translate Releases</name>
+        <url>http://orga.24t.net/nexus/content/repositories/releases</url>
+      </repository>
+      <snapshotRepository>
+        <id>snapshots-24translate</id>
+        <name>24translate Snapshots</name>
+        <url>http://orga.24t.net/nexus/content/repositories/snapshots</url>
+      </snapshotRepository>
+    </distributionManagement>
+  </profile>
     </profiles>
 </project>

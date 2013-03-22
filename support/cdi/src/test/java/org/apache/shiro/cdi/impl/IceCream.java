@@ -19,14 +19,15 @@
 package org.apache.shiro.cdi.impl;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+
+import org.apache.shiro.cdi.ShiroIni;
 
 
 /**
  * @author Harald Wellmann
- *
+ * 
  */
-@Named
+@ShiroIni
 @ApplicationScoped
 public class IceCream implements Food {
 

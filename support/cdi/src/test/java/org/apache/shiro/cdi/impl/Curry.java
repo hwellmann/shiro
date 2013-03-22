@@ -18,14 +18,14 @@
  */
 package org.apache.shiro.cdi.impl;
 
-import javax.inject.Named;
+import org.apache.shiro.cdi.ShiroIni;
 
 
 /**
  * @author Harald Wellmann
- *
+ * 
  */
-@Named
+@ShiroIni
 public class Curry implements Food {
 
     public String getFlavour() {
