@@ -1,22 +1,31 @@
 /*
- * Copyright 2008 Les Hazlewood
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.shiro.session.mgt;
 
 import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.session.*;
+import org.apache.shiro.event.EventBus;
+import org.apache.shiro.event.EventBusAware;
+import org.apache.shiro.session.InvalidSessionException;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.SessionException;
+import org.apache.shiro.session.SessionListener;
+import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +42,11 @@ import java.util.Date;
  *
  * @since 1.0
  */
-public abstract class AbstractNativeSessionManager extends AbstractSessionManager implements NativeSessionManager {
+public abstract class AbstractNativeSessionManager extends AbstractSessionManager implements NativeSessionManager, EventBusAware {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSessionManager.class);
+
+    private EventBus eventBus;
 
     private Collection<SessionListener> listeners;
 
@@ -50,6 +61,38 @@ public abstract class AbstractNativeSessionManager extends AbstractSessionManage
     @SuppressWarnings({"UnusedDeclaration"})
     public Collection<SessionListener> getSessionListeners() {
         return this.listeners;
+    }
+
+    /**
+     * Returns the EventBus used to publish SessionEvents.
+     *
+     * @return the EventBus used to publish SessionEvents.
+     * @since 1.3
+     */
+    protected EventBus getEventBus() {
+        return eventBus;
+    }
+
+    /**
+     * Sets the EventBus to use to publish SessionEvents.
+     *
+     * @param eventBus the EventBus to use to publish SessionEvents.
+     * @since 1.3
+     */
+    public void setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+
+    /**
+     * Publishes events on the event bus if the event bus is non-null, otherwise does nothing.
+     *
+     * @param event the event to publish on the event bus if the event bus exists.
+     * @since 1.3
+     */
+    protected void publishEvent(Object event) {
+        if (this.eventBus != null) {
+            this.eventBus.publish(event);
+        }
     }
 
     public Session start(SessionContext context) {
@@ -236,13 +279,16 @@ public abstract class AbstractNativeSessionManager extends AbstractSessionManage
 
     public void stop(SessionKey key) throws InvalidSessionException {
         Session session = lookupRequiredSession(key);
-        if (log.isDebugEnabled()) {
-            log.debug("Stopping session with id [" + session.getId() + "]");
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Stopping session with id [" + session.getId() + "]");
+            }
+            session.stop();
+            onStop(session, key);
+            notifyStop(session);
+        } finally {
+            afterStopped(session);
         }
-        session.stop();
-        onStop(session, key);
-        notifyStop(session);
-        afterStopped(session);
     }
 
     protected void onStop(Session session, SessionKey key) {

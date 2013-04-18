@@ -16,23 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.shiro.config.event;
+package org.apache.shiro.event
 
-import java.util.Map;
+import org.junit.Test
+
+import static org.junit.Assert.assertSame
+import static org.junit.Assert.assertTrue
 
 /**
- * Event triggered when a configured bean has been instantiated and fully configured but right before the bean has been
- * initialized.
- *
  * @since 1.3
- * @see InstantiatedBeanEvent
- * @see org.apache.shiro.util.Initializable Initializable
- * @see InitializedBeanEvent
- * @see DestroyedBeanEvent
  */
-public class ConfiguredBeanEvent extends BeanEvent {
+class EventTest {
 
-    public ConfiguredBeanEvent(final String beanName, final Object bean, final Map<String, Object> beanContext) {
-        super(beanName, bean, beanContext);
+    @Test
+    void testDefault() {
+        Object source = new Object()
+        long start = System.currentTimeMillis()
+        Event e = new DummyEvent(source)
+        long stop = System.currentTimeMillis()
+
+        assertSame source, e.source
+        assertTrue start <= e.timestamp
+        assertTrue stop >= e.timestamp
+    }
+
+    private class DummyEvent extends Event {
+        DummyEvent(Object source) {
+            super(source)
+        }
     }
 }

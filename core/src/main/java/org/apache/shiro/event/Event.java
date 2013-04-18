@@ -16,23 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.shiro.config.event;
+package org.apache.shiro.event;
 
-import java.util.Map;
+import java.util.EventObject;
 
 /**
- * Event triggered when a configured bean has been instantiated and fully configured but right before the bean has been
- * initialized.
+ * Root class for all of Shiro's event classes.  Provides access to the timestamp when the event occurred.
  *
  * @since 1.3
- * @see InstantiatedBeanEvent
- * @see org.apache.shiro.util.Initializable Initializable
- * @see InitializedBeanEvent
- * @see DestroyedBeanEvent
  */
-public class ConfiguredBeanEvent extends BeanEvent {
+public abstract class Event extends EventObject {
 
-    public ConfiguredBeanEvent(final String beanName, final Object bean, final Map<String, Object> beanContext) {
-        super(beanName, bean, beanContext);
+    private final long timestamp; //millis since Epoch (UTC time zone).
+
+    public Event(Object source) {
+        super(source);
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    /**
+     * Returns the timestamp when this event occurred as the number of milliseconds since Epoch (UTC time zone).
+     *
+     * @return the timestamp when this event occurred as the number of milliseconds since Epoch (UTC time zone).
+     */
+    public long getTimestamp() {
+        return this.timestamp;
     }
 }

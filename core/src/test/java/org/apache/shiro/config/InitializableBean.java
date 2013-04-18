@@ -16,23 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.shiro.config.event;
+package org.apache.shiro.config;
 
-import java.util.Map;
+import org.apache.shiro.ShiroException;
+import org.apache.shiro.util.Initializable;
 
 /**
- * Event triggered when a configured bean has been instantiated and fully configured but right before the bean has been
- * initialized.
- *
- * @since 1.3
- * @see InstantiatedBeanEvent
- * @see org.apache.shiro.util.Initializable Initializable
- * @see InitializedBeanEvent
- * @see DestroyedBeanEvent
+ * @since 1.2.2
  */
-public class ConfiguredBeanEvent extends BeanEvent {
+public class InitializableBean implements Initializable {
 
-    public ConfiguredBeanEvent(final String beanName, final Object bean, final Map<String, Object> beanContext) {
-        super(beanName, bean, beanContext);
+    private volatile boolean initialized = false;
+
+    public void init() throws ShiroException {
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }
