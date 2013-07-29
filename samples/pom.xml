@@ -42,6 +42,7 @@
 	    <module>guice</module>
         <module>quickstart-guice</module>
         <module>cdi-web</module>
+        <module>faces</module>
     </modules>
 
     <build>
